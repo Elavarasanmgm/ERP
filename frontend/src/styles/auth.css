@@ -1,0 +1,89 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e40af 0%, #059669 100%);
+}
+
+.auth-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card h1 {
+  text-align: center;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.auth-card h2 {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1e40af;
+}
+
+button[type='submit'] {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button[type='submit']:hover {
+  background-color: #1e3a8a;
+}
+
+.auth-card p {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.auth-card a {
+  color: #1e40af;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-card a:hover {
+  text-decoration: underline;
+}
