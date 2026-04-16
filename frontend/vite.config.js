@@ -12,8 +12,14 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip'],
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
 });

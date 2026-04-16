@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/apiClient';
 import './Accounting.css';
+import usePagination from '../../hooks/usePagination';
+import ErpPagination from '../../components/Shared/ErpPagination';
+import LoadingBackdrop from '../../components/Shared/LoadingBackdrop';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
+
+  const pagn = usePagination(customers, (item, q) => (item.name || '').toLowerCase().includes(q) || (item.customername || '').toLowerCase().includes(q) || (item.email || '').toLowerCase().includes(q));
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -60,6 +65,7 @@ const Customers = () => {
 
   return (
     <div className="accounting-section">
+      <LoadingBackdrop open={loading} />
       <div className="section-header">
         <h2>Customers</h2>
         <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
@@ -125,36 +131,32 @@ const Customers = () => {
         </form>
       )}
 
-      {loading ? (
-        <p>Loading customers...</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Country</th>
-                <th>Credit Limit</th>
+      <div className="table-responsive">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>Country</th>
+              <th>Credit Limit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pagn.pageRows.map((customer) => (
+              <tr key={customer.id}>
+                <td>{customer.name}</td>
+                <td>{customer.email || '-'}</td>
+                <td>{customer.phone || '-'}</td>
+                <td>{customer.city || '-'}</td>
+                <td>{customer.country || '-'}</td>
+                <td className="amount">₹{Number(customer.creditlimit || 0).toLocaleString('en-IN')}</td>
               </tr>
-            </thead>
-            <tbody>
-              {customers.map((customer) => (
-                <tr key={customer.CustomerId}>
-                  <td>{customer.CustomerName}</td>
-                  <td>{customer.Email || '-'}</td>
-                  <td>{customer.Phone || '-'}</td>
-                  <td>{customer.City || '-'}</td>
-                  <td>{customer.Country || '-'}</td>
-                  <td className="amount">${customer.CreditLimit?.toFixed(2) || '0.00'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

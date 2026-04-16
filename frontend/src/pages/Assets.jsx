@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../services/apiClient';
 import './Assets.css';
+import LoadingBackdrop from '../components/Shared/LoadingBackdrop';
 
 export default function Assets() {
   const [activeTab, setActiveTab] = useState('assets');
@@ -95,7 +96,7 @@ export default function Assets() {
       </div>
 
       <div className="module-content">
-        {loading && <div className="info-message">Loading...</div>}
+        <LoadingBackdrop open={loading} />
         {error && <div className="error-message">{error}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
 

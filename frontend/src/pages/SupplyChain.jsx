@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../services/apiClient';
 import './SupplyChain.css';
+import LoadingBackdrop from '../components/Shared/LoadingBackdrop';
 
 export default function SupplyChain() {
   const [activeTab, setActiveTab] = useState('requisitions');
@@ -131,7 +132,7 @@ export default function SupplyChain() {
       </div>
 
       <div className="module-content">
-        {loading && <div className="info-message">Loading...</div>}
+        <LoadingBackdrop open={loading} />
         {error && <div className="error-message">{error}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
 

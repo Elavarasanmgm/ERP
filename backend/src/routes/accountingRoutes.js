@@ -1,46 +1,59 @@
 const express = require('express');
 const router = express.Router();
-const ledgerController = require('../controllers/ledgerController');
-const transactionController = require('../controllers/transactionController');
+const c = require('../controllers/accountingController');
+const tx = require('../controllers/transactionController');
 const { authenticateToken } = require('../middleware/auth');
 
-/**
- * Ledger Account Routes
- */
-router.get('/accounts', authenticateToken, ledgerController.getLedgerAccounts);
-router.get('/accounts/:id', authenticateToken, ledgerController.getLedgerAccountById);
-router.post('/accounts', authenticateToken, ledgerController.createLedgerAccount);
-router.put('/accounts/:id', authenticateToken, ledgerController.updateLedgerAccount);
+// Chart of Accounts
+router.get('/accounts/tree', authenticateToken, c.getAccountsTree);
+router.get('/accounts', authenticateToken, c.getAccounts);
+router.post('/accounts', authenticateToken, c.createAccount);
 
-/**
- * Journal Entry Routes
- */
-router.get('/journal', authenticateToken, ledgerController.getJournalEntries);
-router.post('/journal', authenticateToken, ledgerController.createJournalEntry);
+// Ledger
+router.get('/ledger/:account_id', authenticateToken, c.getLedger);
 
-/**
- * Financial Report Routes
- */
-router.get('/trial-balance', authenticateToken, ledgerController.getTrialBalance);
-router.get('/income-statement', authenticateToken, ledgerController.getIncomeStatement);
+// Tax Master
+router.get('/taxes', authenticateToken, c.getTaxes);
+router.post('/taxes', authenticateToken, c.createTax);
+router.put('/taxes/:id', authenticateToken, c.updateTax);
 
-/**
- * Customer Routes
- */
-router.get('/customers', authenticateToken, transactionController.getCustomerList);
-router.get('/customers/:id', authenticateToken, transactionController.getCustomerById);
-router.post('/customers', authenticateToken, transactionController.addCustomer);
+// Financial Periods
+router.get('/periods', authenticateToken, c.getFinancialPeriods);
+router.post('/periods', authenticateToken, c.createFinancialPeriod);
+router.put('/periods/:id/close', authenticateToken, c.closePeriod);
 
-/**
- * Supplier Routes
- */
-router.get('/suppliers', authenticateToken, transactionController.getSupplierList);
-router.post('/suppliers', authenticateToken, transactionController.addSupplier);
+// Journal Entries
+router.get('/journal', authenticateToken, c.getJournals);
+router.get('/journal/pending', authenticateToken, c.getPendingJournals);
+router.get('/journal/:id', authenticateToken, c.getJournalById);
+router.post('/journal', authenticateToken, c.createJournal);
+router.put('/journal/:id/submit', authenticateToken, c.submitJournal);
+router.put('/journal/:id/verify', authenticateToken, c.verifyJournal);
+router.put('/journal/:id/post', authenticateToken, c.postJournal);
+router.post('/journal/:id/reverse', authenticateToken, c.reverseJournal);
 
-/**
- * Invoice Routes
- */
-router.get('/invoices', authenticateToken, transactionController.getInvoiceRecords);
-router.post('/invoices', authenticateToken, transactionController.createInvoice);
+// GST Report
+router.get('/gst-report', authenticateToken, c.getGstReport);
+
+// Financial Reports
+router.get('/trial-balance', authenticateToken, c.getTrialBalance);
+router.get('/income-statement', authenticateToken, c.getIncomeStatement);
+
+// Customers
+router.get('/customers', authenticateToken, tx.getCustomerList);
+router.get('/customers/:id', authenticateToken, tx.getCustomerById);
+router.post('/customers', authenticateToken, tx.addCustomer);
+router.put('/customers/:id', authenticateToken, tx.updateCustomer);
+
+// Suppliers
+router.get('/suppliers', authenticateToken, tx.getSupplierList);
+router.get('/suppliers/:id', authenticateToken, tx.getSupplierById);
+router.post('/suppliers', authenticateToken, tx.addSupplier);
+router.put('/suppliers/:id', authenticateToken, tx.updateSupplier);
+
+// Invoices
+router.get('/invoices', authenticateToken, tx.getInvoiceRecords);
+router.get('/invoices/pending', authenticateToken, tx.getPendingInvoices);
+router.post('/invoices', authenticateToken, tx.createInvoice);
 
 module.exports = router;

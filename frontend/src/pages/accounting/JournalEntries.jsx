@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/apiClient';
 import './Accounting.css';
+import usePagination from '../../hooks/usePagination';
+import ErpPagination from '../../components/Shared/ErpPagination';
+import LoadingBackdrop from '../../components/Shared/LoadingBackdrop';
 
 const JournalEntries = () => {
   const [entries, setEntries] = useState([]);
+  const pagn = usePagination(entries, (item, q) => (item.description||'').toLowerCase().includes(q)||(item.account_name||'').toLowerCase().includes(q));
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -108,8 +112,8 @@ const JournalEntries = () => {
           >
             <option value="">Select Debit Account *</option>
             {accounts.map((acc) => (
-              <option key={acc.AccountId} value={acc.AccountId}>
-                {acc.AccountCode} - {acc.AccountName}
+              <option key={acc.id} value={acc.id}>
+                {acc.code} - {acc.name}
               </option>
             ))}
           </select>
@@ -121,8 +125,8 @@ const JournalEntries = () => {
           >
             <option value="">Select Credit Account *</option>
             {accounts.map((acc) => (
-              <option key={acc.AccountId} value={acc.AccountId}>
-                {acc.AccountCode} - {acc.AccountName}
+              <option key={acc.id} value={acc.id}>
+                {acc.code} - {acc.name}
               </option>
             ))}
           </select>
@@ -146,7 +150,7 @@ const JournalEntries = () => {
               </tr>
             </thead>
             <tbody>
-              {entries.map((entry) => (
+              {pagn.pageRows.map((entry) => (
                 <tr key={entry.TransactionId}>
                   <td>{new Date(entry.TransactionDate).toLocaleDateString()}</td>
                   <td>{entry.Description || '-'}</td>

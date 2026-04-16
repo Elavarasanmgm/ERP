@@ -8,7 +8,6 @@ export default function CRM() {
   const [opportunities, setOpportunities] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -32,7 +31,6 @@ export default function CRM() {
   });
 
   const loadData = useCallback(async () => {
-    setLoading(true);
     setError('');
     try {
       if (activeTab === 'leads') {
@@ -51,8 +49,6 @@ export default function CRM() {
     } catch (err) {
       setError('Failed to load data');
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   }, [activeTab]);
 
@@ -131,7 +127,6 @@ export default function CRM() {
       </div>
 
       <div className="module-content">
-        {loading && <div className="info-message">Loading...</div>}
         {error && <div className="error-message">{error}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
 

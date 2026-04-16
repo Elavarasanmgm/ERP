@@ -15,6 +15,9 @@ const authSlice = createSlice({
       state.isLoading = true;
       state.error = null;
     },
+    clearError: (state) => {
+      state.error = null;
+    },
     loginSuccess: (state, action) => {
       state.isLoading = false;
       state.token = action.payload.token;
@@ -32,8 +35,15 @@ const authSlice = createSlice({
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     },
+    // Update the currently logged-in user's permissions/role in state + localStorage
+    updateCurrentUser: (state, action) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+        localStorage.setItem('user', JSON.stringify(state.user));
+      }
+    },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } = authSlice.actions;
+export const { loginStart, loginSuccess, loginFailure, logout, updateCurrentUser, clearError } = authSlice.actions;
 export default authSlice.reducer;

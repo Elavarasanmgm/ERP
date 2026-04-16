@@ -14,6 +14,7 @@ router.post('/forecasts', planningController.createDemandForecast);
 // Production Plans
 router.get('/production-plans', planningController.getProductionPlans);
 router.post('/production-plans', planningController.createProductionPlan);
+router.post('/production-plans/:id/release', planningController.releaseProductionPlan);
 
 // MRP
 router.get('/mrp-runs', planningController.getMRPRuns);
