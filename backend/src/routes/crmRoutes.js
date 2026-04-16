@@ -11,14 +11,17 @@ router.use(authenticateToken);
 router.get('/leads', crmController.getLeads);
 router.get('/leads/:id', crmController.getLeadById);
 router.post('/leads', crmController.createLead);
+router.put('/leads/:id', crmController.updateLead);
 
 // Opportunities
 router.get('/opportunities', crmController.getOpportunities);
 router.post('/opportunities', crmController.createOpportunity);
+router.put('/opportunities/:id/convert-to-so', crmController.convertOpportunityToSO);
 
 // Contacts
 router.get('/contacts', crmController.getContacts);
 router.post('/contacts', crmController.createContact);
+router.put('/contacts/:id', crmController.updateContact);
 
 // Activities
 router.get('/activities', crmController.getActivities);

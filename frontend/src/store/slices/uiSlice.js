@@ -4,6 +4,7 @@ const initialState = {
   sidebarOpen: true,
   theme: 'light',
   notifications: [],
+  loading: false,
 };
 
 const uiSlice = createSlice({
@@ -19,6 +20,9 @@ const uiSlice = createSlice({
     setTheme: (state, action) => {
       state.theme = action.payload;
     },
+    setLoading: (state, action) => {
+      state.loading = !!action.payload;
+    },
     addNotification: (state, action) => {
       state.notifications.push(action.payload);
     },
@@ -28,6 +32,6 @@ const uiSlice = createSlice({
   },
 });
 
-export const { toggleSidebar, setSidebarOpen, setTheme, addNotification, removeNotification } =
+export const { toggleSidebar, setSidebarOpen, setTheme, setLoading, addNotification, removeNotification } =
   uiSlice.actions;
 export default uiSlice.reducer;

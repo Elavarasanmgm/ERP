@@ -43,7 +43,7 @@ function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>ERP System</h1>
+        <h1>DIMA</h1>
         <h2>Register</h2>
         <form onSubmit={handleRegister}>
           <div className="form-group">

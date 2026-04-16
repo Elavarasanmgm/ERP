@@ -17,13 +17,24 @@ const assetsRoutes = require('./routes/assetsRoutes');
 const supplyChainRoutes = require('./routes/supplyChainRoutes');
 const qualityRoutes = require('./routes/qualityRoutes');
 const planningRoutes = require('./routes/planningRoutes');
-const { getPool, closePool } = require('./config/database');
+// New routes
+const masterRoutes = require('./routes/masterRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+const gstRoutes = require('./routes/gstRoutes');
+const salesRoutes = require('./routes/salesRoutes');
+const purchaseRoutes = require('./routes/purchaseRoutes');
+const paymentsRoutes = require('./routes/paymentsRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const reportRoutes = require('./routes/reportRoutes');
+const { executeQuery } = require('./config/database');
 
 const app = express();
 const frontendDistDir = path.join(__dirname, '../../frontend/dist');
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for now to find source of default-src 'none' error
+}));
 app.use(cors({
   origin: (process.env.CORS_ORIGIN || 'http://localhost:3000').trim(),
   credentials: true,
@@ -54,31 +65,34 @@ app.use('/api/assets', assetsRoutes);
 app.use('/api/supply-chain', supplyChainRoutes);
 app.use('/api/quality', qualityRoutes);
 app.use('/api/planning', planningRoutes);
+// New routes
+app.use('/api/master', masterRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/gst', gstRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/purchase', purchaseRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reports', reportRoutes);
 
 app.get('/api/diagnostics/db', async (req, res) => {
   try {
-    const pool = await getPool();
-    const result = await pool.request().query('SELECT TOP 1 UserId, Email FROM Users ORDER BY UserId');
+    const result = await executeQuery('SELECT userid, email FROM users ORDER BY userid LIMIT 1');
 
     return res.json({
       ok: true,
-      server: process.env.DB_SERVER,
+      host: process.env.DB_HOST,
       database: process.env.DB_DATABASE,
-      sample: result.recordset[0] || null,
+      sample: result.rows[0] || null,
     });
   } catch (err) {
-    await closePool().catch(() => {});
-
     return res.status(500).json({
       ok: false,
-      server: process.env.DB_SERVER,
+      host: process.env.DB_HOST,
       database: process.env.DB_DATABASE,
       error: {
         message: err.message,
         code: err.code || null,
-        name: err.name || null,
-        number: err.number || null,
-        state: err.state || null,
       },
     });
   }

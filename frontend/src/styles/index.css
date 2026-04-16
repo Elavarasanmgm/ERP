@@ -106,3 +106,75 @@ button {
   border-bottom-color: #1e40af;
 }
 
+
+/* ── ERP Grid Table: auto-size columns by content ── */
+.erp-gtable {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.erp-gthead {
+  background-color: #f8fafc !important;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.erp-gthead > * {
+  border-right: 1px solid #cbd5e1;
+}
+.erp-gthead > *:last-child {
+  border-right: none;
+}
+
+.erp-gtrow {
+  transition: background 0.12s;
+  border-bottom: 1px solid #e2e8f0;
+}
+.erp-gtrow > * {
+  border-right: 1px solid #e2e8f0;
+}
+.erp-gtrow > *:last-child {
+  border-right: none;
+}
+.erp-gtrow:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Auto-fit grid columns — applied via JS inline style override */
+.erp-auto-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(80px, auto)) !important;
+}
+
+/* ── ERP Grid cell alignment fixes ── */
+
+/* Chips (MUI) inside grid cells must NOT stretch full cell width */
+.erp-gthead .MuiChip-root,
+.erp-gtrow .MuiChip-root {
+  width: fit-content !important;
+  max-width: 120px;
+}
+
+/* Amount / monospace cells — right-align by default when class applied */
+.erp-cell-amount {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  padding-right: 12px;
+}
+
+/* Prevent any grid cell from overflowing its column */
+.erp-gthead > *,
+.erp-gtrow > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+/* Chip cells should allow natural width and not clip */
+.erp-gthead > .erp-cell-chip,
+.erp-gtrow > .erp-cell-chip {
+  overflow: visible;
+  white-space: normal;
+}

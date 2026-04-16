@@ -14,6 +14,7 @@ router.post('/requisitions', supplyChainController.createPurchaseRequisition);
 // Vendors
 router.get('/vendors', supplyChainController.getVendors);
 router.post('/vendors', supplyChainController.registerVendor);
+router.put('/vendors/:id', supplyChainController.updateVendor);
 
 // Goods Receipt
 router.get('/goods-receipt', supplyChainController.getGoodsReceipt);

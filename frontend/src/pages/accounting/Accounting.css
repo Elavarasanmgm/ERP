@@ -62,23 +62,47 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: auto;
 }
 
 .data-table thead {
   background-color: #f3f4f6;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid #cbd5e1;
 }
 
 .data-table th {
-  padding: 12px 15px;
+  padding: 11px 14px;
   text-align: left;
   font-weight: 600;
   color: #374151;
+  white-space: nowrap;        /* headers never wrap */
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-right: 1px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.data-table th:last-child {
+  border-right: none;
 }
 
 .data-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 11px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  white-space: nowrap;
+  font-size: 0.84rem;
+  color: #1e293b;
+}
+
+.data-table td:last-child {
+  border-right: none;
+}
+
+.data-table td.wrap {
+  white-space: normal;        /* allow wrapping for description columns */
+  word-break: break-word;
 }
 
 .data-table tbody tr:hover {
@@ -88,7 +112,14 @@
 .data-table .amount {
   text-align: right;
   font-family: 'Courier New', monospace;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Make first/key column slightly bolder */
+.data-table td:first-child {
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .data-table .total-row {

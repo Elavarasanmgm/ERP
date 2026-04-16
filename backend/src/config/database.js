@@ -1,69 +1,64 @@
-const sql = require('mssql');
+const { Pool } = require('pg');
 const logger = require('../utils/logger');
 
 const getEnv = (name, fallback = '') => (process.env[name] || fallback).trim();
 
-const parseServerConfig = () => {
-  const rawServer = getEnv('DB_SERVER');
-  const [serverHost, serverPort] = rawServer.split(',');
+const pool = new Pool({
+  host:     getEnv('DB_HOST', 'localhost'),
+  port:     parseInt(getEnv('DB_PORT', '5434'), 10),
+  database: getEnv('DB_DATABASE', 'ERPSolution'),
+  user:     getEnv('DB_USER', 'erp_user'),
+  password: getEnv('DB_PASSWORD', 'erp_password'),
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+});
 
-  return {
-    server: serverHost || rawServer,
-    port: parseInt(serverPort || getEnv('DB_PORT'), 10) || 1433,
-  };
-};
-
-const serverConfig = parseServerConfig();
-
-const config = {
-  server: serverConfig.server,
-  authentication: {
-    type: 'default',
-    options: {
-      userName: getEnv('DB_USER'),
-      password: getEnv('DB_PASSWORD'),
-    },
-  },
-  options: {
-    database: getEnv('DB_DATABASE'),
-    port: serverConfig.port,
-    encrypt: getEnv('DB_ENCRYPT') === 'true',
-    trustServerCertificate: getEnv('DB_TRUST_CERT') === 'true',
-    connectionTimeout: 30000,
-    requestTimeout: 30000,
-    enableKeepAlive: true,
-  },
-};
-
-let pool = null;
+pool.on('error', (err) => {
+  logger.error('Database pool error:', err);
+});
 
 async function getPool() {
-  if (!pool) {
-    try {
-      pool = new sql.ConnectionPool(config);
-      pool.on('error', (err) => {
-        logger.error('Database pool error:', err);
-      });
-      await pool.connect();
-      logger.info('Successfully connected to SQL Server');
-    } catch (err) {
-      logger.error('Failed to connect to SQL Server:', err);
-      throw err;
-    }
-  }
   return pool;
 }
 
-async function executeQuery(query, params = {}) {
+/**
+ * Execute a parameterised query.
+ * Accepts params as either:
+ *   - an array  → passed directly as positional $1, $2, …
+ *   - an object → named @paramName style (MSSQL compat) converted to $N positional
+ *
+ * Named param rules:
+ *   - Each unique @name gets one $N slot (first occurrence order).
+ *   - Repeated @name in the query reuses the same $N.
+ *
+ * Returns { rows, rowCount } — mirrors the pg Result shape.
+ */
+async function executeQuery(query, params = []) {
   try {
-    const pool = await getPool();
-    const request = pool.request();
+    let finalQuery = query;
+    let values;
 
-    for (const [key, value] of Object.entries(params)) {
-      request.input(key, value);
+    if (!Array.isArray(params) && typeof params === 'object' && params !== null) {
+      // Convert named @params → positional $N
+      const nameToIndex = {};
+      let counter = 0;
+      finalQuery = query.replace(/@([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, name) => {
+        if (!(name in nameToIndex)) {
+          nameToIndex[name] = ++counter;
+        }
+        return `$${nameToIndex[name]}`;
+      });
+      // Build values array in the order names were first seen
+      values = Object.fromEntries(
+        Object.entries(nameToIndex).map(([name, idx]) => [idx - 1, params[name]])
+      );
+      values = Array.from({ length: counter }, (_, i) => values[i]);
+    } else {
+      values = params;
     }
 
-    const result = await request.query(query);
+    const result = await pool.query(finalQuery, values);
     return result;
   } catch (err) {
     logger.error('Query execution error:', err);
@@ -72,16 +67,13 @@ async function executeQuery(query, params = {}) {
 }
 
 async function closePool() {
-  if (pool) {
-    await pool.close();
-    pool = null;
-    logger.info('Database pool closed');
-  }
+  await pool.end();
+  logger.info('Database pool closed');
 }
 
 module.exports = {
   getPool,
   executeQuery,
   closePool,
-  sql,
+  pool,
 };
